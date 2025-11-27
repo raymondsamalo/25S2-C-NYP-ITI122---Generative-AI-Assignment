@@ -1,4 +1,6 @@
+import time
 from typing import Optional
+from groq import APIError
 from langchain_classic.agents import AgentExecutor, create_tool_calling_agent
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.tools import tool
@@ -11,19 +13,19 @@ from app.dependencies import (CONFIG, customer_account_status_service,
                               customer_residency_status_service, db,
                               policy_service)
 
-model = CONFIG.model.version
 # response = ollama.generate(model=model, prompt='Why is the sky blue?')
 # print(response['response'])
 
 @tool
-def check_loan_recommendation(residency:str) -> bool:
+def check_loan_recommendation(residency:str, risk:str) -> bool:
     """
-    given residency status determine whether to recommend loan or not
+     check whether to recommend loan based on residency and overall risk
     """
-    if residency is None:
+    if risk is None or residency is None:
         return False
-    residency=residency.strip().lower() 
-    return residency in ["citizen","permanent-resident"]
+    risk = risk.strip().lower()
+    residency=residency.strip().lower()
+    return residency in ["citizen","permanent-resident"] and risk in ['medium','low']
 
 @tool
 def get_customer_interest_rate_percentage(risk: str) -> Optional[float]:
@@ -122,11 +124,26 @@ if __name__ == "__main__":
         get_customer_interest_rate_percentage,
         get_customer_name_by_id]
     # Initialize your Ollama model
-    llm = ChatGroq(model=CONFIG.model.groq_model, temperature=0.2)
-    # llm = ChatOllama(model=model)
+    if CONFIG.model.choice == "groq":
+        llm = ChatGroq(model=CONFIG.model.groq_model, temperature=0.2)
+    else:
+        model = CONFIG.model.ollama_model
+        llm = ChatOllama(model=model)
     agent = create_tool_calling_agent(llm, tools, prompt)
-    agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
-    response = agent_executor.invoke(
-        {"input": "provide information on Kit to make loan recommendation including credit score, account status, risk, interest rate."})
-    print(response)
+    agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=False)
+    done = False
+    retry=0
+    while not done:
+        try:
+            response = agent_executor.invoke(
+                {"input": "provide information on Matt and check whether to provide loan recommendation including credit score, account status, risk, interest rate."})
+            print(response["output"])
+            done=True
+        except APIError as e:
+            print(f"A general API Error occurred: {e}")
+            retry+=1
+            if retry>3:
+                time.sleep(0.5)
+                done=True
+
     # Example interaction where the model doesn't need the tool

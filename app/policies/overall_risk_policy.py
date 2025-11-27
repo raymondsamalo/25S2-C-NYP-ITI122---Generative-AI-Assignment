@@ -61,7 +61,6 @@ class OverallRiskPolicy:
                                         min_credit_score=min_credit_score,
                                         account_status=account_status,
                                         overall_risk=risk)
-                    print(rp)
                     temp.append(rp)
                 except Exception as e:
                     print(e,r, len(r))

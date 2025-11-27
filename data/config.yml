@@ -1,6 +1,7 @@
 ---
-model: 
-  version: cow/gemma2_tools:latest
+model:
+  choice: groq
+  ollama_model: llama3.1:latest
   groq_model: openai/gpt-oss-20b
   groq_api_key: !ENV ${GROQ_API_KEY}
 database:
