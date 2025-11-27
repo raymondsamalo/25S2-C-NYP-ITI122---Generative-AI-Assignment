@@ -1,0 +1,6 @@
+---
+model: 
+  version: pacozaa/tinyllama:latest
+  openai_api_key: !ENV ${OPENAI_API_KEY}
+database:
+  path: 'data/database.sqlite'

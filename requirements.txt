@@ -1,3 +1,11 @@
 sqlmodel==0.0.27
 aiologic==0.15.0
-pydantic[email]
+pyaml_env==1.2.2
+ollama==0.6.1
+langchain==1.1.0
+langchain-openai==1.1.0
+langchain-classic==1.0.0
+langchain-ollama==1.0.0
+langchain-community==0.4.1
+pypdf==6.4.0
+chromadb==0.3.23
