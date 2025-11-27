@@ -12,9 +12,9 @@ data_path = script_directory.parent.parent / 'data' / 'database.sqlite'
 
 
 class AccountStatus(StrEnum):
-    GOOD_STANDING = "good-standing"
-    CLOSED = "closed"
-    DELIQUENT = "delinquent"
+    GOOD_STANDING = "Good-standing"
+    CLOSED = "Closed"
+    DELIQUENT = "Delinquent"
 
 
 class ResidencyStatus(StrEnum):

@@ -1,6 +1,8 @@
 ---
 model: 
   version: pacozaa/tinyllama:latest
-  openai_api_key: !ENV ${OPENAI_API_KEY}
 database:
   path: 'data/database.sqlite'
+policies:
+  interest_rate_doc: 'data/Bank Loan Interest Rate Policy.pdf'
+  overall_risk_doc: 'data/Bank Loan Overall Risk Policy.pdf'
