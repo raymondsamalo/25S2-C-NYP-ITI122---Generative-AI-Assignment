@@ -125,7 +125,7 @@ if __name__ == "__main__":
         get_customer_name_by_id]
     # Initialize your Ollama model
     if CONFIG.model.choice == "groq":
-        llm = ChatGroq(model=CONFIG.model.groq_model, temperature=0.2)
+        llm = ChatGroq(model=CONFIG.model.groq_model, temperature=0.1)
     else:
         model = CONFIG.model.ollama_model
         llm = ChatOllama(model=model)
