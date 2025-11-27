@@ -1,6 +1,8 @@
 ---
 model: 
-  version: gpt-oss:20b
+  version: cow/gemma2_tools:latest
+  groq_model: openai/gpt-oss-20b
+  groq_api_key: !ENV ${GROQ_API_KEY}
 database:
   path: 'data/database.sqlite'
 policies:
