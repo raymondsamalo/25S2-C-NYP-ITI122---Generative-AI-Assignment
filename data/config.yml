@@ -1,6 +1,6 @@
 ---
 model: 
-  version: pacozaa/tinyllama:latest
+  version: gpt-oss:20b
 database:
   path: 'data/database.sqlite'
 policies:
