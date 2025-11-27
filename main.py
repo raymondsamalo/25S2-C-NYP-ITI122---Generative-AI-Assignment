@@ -4,7 +4,7 @@ from app.dependencies import customer_info_service, db, customer_residency_statu
 if __name__ == "__main__":
     print(data_path)
     create_and_populate_db(db)
-    c: Optional[Customer] = customer_info_service.find_by_name("Loren")
+    c: Optional[Customer] = customer_info_service.find_by_name("Hilda")
     if c:
         residency = customer_residency_status_service.find_by_id(c.ID)  # type: ignore
         credit_score = customer_credit_score_service.find_by_id(c.ID) # type: ignore
@@ -16,4 +16,5 @@ if __name__ == "__main__":
         print(interest)
         print(account_status)
         print(credit_score)
+        print(residency)
         
