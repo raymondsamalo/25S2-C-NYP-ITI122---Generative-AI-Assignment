@@ -1,42 +1,50 @@
 from abc import ABC, abstractmethod
 import pathlib
-import enum
+from enum import StrEnum
 from sqlalchemy import Engine
 from sqlalchemy.dialects import postgresql  # Works for SQLite too
 from sqlmodel import Column, Field, Session, SQLModel, create_engine, Enum
+
+from app.foundation.design_patterns import singleton
 
 script_directory = pathlib.Path(__file__).parent
 data_path = script_directory.parent.parent / 'data' / 'database.sqlite'
 
 
-class AccountStatus(str, enum.Enum):
-    good_standing = "good-standing"
-    closed = "closed"
-    delinquent = "delinquent"
+class AccountStatus(StrEnum):
+    GOOD_STANDING = "good-standing"
+    CLOSED = "closed"
+    DELIQUENT = "delinquent"
+
+
+class ResidencyStatus(StrEnum):
+    PERMANENT_RESIDENT = "permanent-resident"
+    CITIZEN = "citizen"
+    NON_RESIDENT = "non-resident"
 
 
 class Customer(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
+    ID: int | None = Field(default=None, primary_key=True)
     name: str
     email: str
 
 
 class CustomerCreditScore(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True,
-                           foreign_key='customer.id')
+    ID: int | None = Field(default=None, primary_key=True,
+                           foreign_key='customer.ID')
     credit_score: int | None = None
 
 
 class CustomerAccountStatus(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True,
-                           foreign_key='customer.id')
+    ID: int | None = Field(default=None, primary_key=True,
+                           foreign_key='customer.ID')
     account_status:  AccountStatus = Field(
         default=None, sa_column=Column(Enum(AccountStatus)))
 
 
 class CustomerPRStatus(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True,
-                           foreign_key='customer.id')
+    ID: int | None = Field(default=None, primary_key=True,
+                           foreign_key='customer.ID')
     pr_status: bool
 
 
@@ -69,6 +77,7 @@ class DB(ABC):
         pass
 
 
+@singleton
 class SqliteDB(DB):
     """
     Database wrapper
@@ -105,28 +114,28 @@ def create_and_populate_db(db):
     """
     SQLModel.metadata.create_all(db.engine)
     records = [
-        Customer(id=1111, name="Loren", email="loren@gmail.com"),
-        Customer(id=2222, name="Matt", email="matt@yahoo.com"),
-        Customer(id=3333, name="Hilda", email="halida@gmail.com"),
-        Customer(id=4444, name="Andy", email="andy@gmail.com"),
-        Customer(id=5555, name="Kit", email="kit@yahho.com"),
+        Customer(ID=1111, name="Loren", email="loren@gmail.com"),
+        Customer(ID=2222, name="Matt", email="matt@yahoo.com"),
+        Customer(ID=3333, name="Hilda", email="halida@gmail.com"),
+        Customer(ID=4444, name="Andy", email="andy@gmail.com"),
+        Customer(ID=5555, name="Kit", email="kit@yahho.com"),
         CustomerAccountStatus(
-            id=1111, account_status=AccountStatus.good_standing),
+            ID=1111, account_status=AccountStatus.GOOD_STANDING),
         CustomerAccountStatus(
-            id=2222, account_status=AccountStatus.closed),
+            ID=2222, account_status=AccountStatus.CLOSED),
         CustomerAccountStatus(
-            id=3333, account_status=AccountStatus.delinquent),
+            ID=3333, account_status=AccountStatus.DELIQUENT),
         CustomerAccountStatus(
-            id=4444, account_status=AccountStatus.good_standing),
+            ID=4444, account_status=AccountStatus.GOOD_STANDING),
         CustomerAccountStatus(
-            id=5555, account_status=AccountStatus.delinquent),
-        CustomerCreditScore(id=1111, credit_score=455),
-        CustomerCreditScore(id=2222, credit_score=685),
-        CustomerCreditScore(id=3333, credit_score=825),
-        CustomerCreditScore(id=4444, credit_score=840),
-        CustomerCreditScore(id=5555, credit_score=350),
-        CustomerPRStatus(id=2222, pr_status=True),
-        CustomerPRStatus(id=4444, pr_status=False),
+            ID=5555, account_status=AccountStatus.DELIQUENT),
+        CustomerCreditScore(ID=1111, credit_score=455),
+        CustomerCreditScore(ID=2222, credit_score=685),
+        CustomerCreditScore(ID=3333, credit_score=825),
+        CustomerCreditScore(ID=4444, credit_score=840),
+        CustomerCreditScore(ID=5555, credit_score=350),
+        CustomerPRStatus(ID=2222, pr_status=True),
+        CustomerPRStatus(ID=4444, pr_status=False),
     ]
     with db.session() as session:
         for record in records:

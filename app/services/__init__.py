@@ -1,1 +1,4 @@
 from .customer_info import CustomerInfoService
+from .account_status import CustomerAccountStatusService
+from .residency_status import ResidencyStatusService
+from .credit_score import CustomerCreditScoreService

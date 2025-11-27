@@ -3,10 +3,6 @@ from typing import Optional
 from sqlalchemy import BinaryExpression
 from sqlmodel import select
 from app.db import DB, Customer
-from app.foundation.design_patterns import singleton
-
-
-@singleton
 class CustomerInfoService:
     """
     Find customer information 
@@ -14,14 +10,14 @@ class CustomerInfoService:
     def __init__(self, db: DB) -> None:
         self.db = db
 
-    def _find_customer_from_query(self, condition: BinaryExpression) -> Optional[Customer]:
-        r = []
+    def _find_from_query(self, condition: BinaryExpression) -> Optional[Customer]:
+        r = None
         with self.db.session() as session:
             results = session.exec(select(Customer).where(condition))
             r = results.one_or_none()
         return r
 
-    def find_customer_with_id(self, customer_id: int) -> Optional[Customer]:
+    def find_by_id(self, customer_id: int) -> Optional[Customer]:
         """_summary_
 
         Args:
@@ -30,9 +26,9 @@ class CustomerInfoService:
         Returns:
             Optional[Customer]: _description_
         """
-        return self._find_customer_from_query(Customer.id == customer_id)  # type: ignore
+        return self._find_from_query(Customer.ID == customer_id)  # type: ignore
 
-    def find_customer_with_name(self, name: str) -> Optional[Customer]:
+    def find_by_name(self, name: str) -> Optional[Customer]:
         """_summary_
 
         Args:
@@ -41,9 +37,9 @@ class CustomerInfoService:
         Returns:
             Optional[Customer]: _description_
         """
-        return self._find_customer_from_query(Customer.name == name)  # type: ignore
+        return self._find_from_query(Customer.name == name)  # type: ignore
 
-    def find_customer_with_email(self,  email: str) -> Optional[Customer]:
+    def find_by_email(self,  email: str) -> Optional[Customer]:
         """_summary_
 
         Args:
@@ -52,4 +48,4 @@ class CustomerInfoService:
         Returns:
             Optional[Customer]: _description_
         """
-        return self._find_customer_from_query(Customer.email == email)  # type: ignore
+        return self._find_from_query(Customer.email == email)  # type: ignore

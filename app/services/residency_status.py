@@ -2,26 +2,28 @@
 from typing import Optional
 from sqlalchemy import BinaryExpression
 from sqlmodel import select
-from app.db import DB, CustomerCreditScore
+from app.db import DB, CustomerPRStatus, ResidencyStatus
 from app.db.db import Customer
 
-class CustomerCreditScoreService:
+class ResidencyStatusService:
     """
     Find customer information 
     """
     def __init__(self, db: DB) -> None:
         self.db = db
 
-    def _find_from_query(self, condition: BinaryExpression) -> Optional[int]:
+    def _find_from_query(self, condition: BinaryExpression) -> Optional[ResidencyStatus]:
         r = None
         with self.db.session() as session:
-            results = session.exec(select(CustomerCreditScore).join(Customer).where(condition)) # type: ignore
+            results = session.exec(select(CustomerPRStatus).join(Customer).where(condition)) # type: ignore
             r = results.one_or_none()
         if r is None:
-            return None
-        return r.credit_score
+            return ResidencyStatus.CITIZEN
+        elif r.pr_status:
+            return ResidencyStatus.PERMANENT_RESIDENT
+        return ResidencyStatus.NON_RESIDENT
 
-    def find_by_id(self, customer_id: int) -> Optional[int]:
+    def find_by_id(self, customer_id: int) -> Optional[ResidencyStatus]:
         """_summary_
 
         Args:
@@ -32,7 +34,7 @@ class CustomerCreditScoreService:
         """
         return self._find_from_query(Customer.ID == customer_id)  # type: ignore
 
-    def find_by_name(self, name: str) -> Optional[int]:
+    def find_by_name(self, name: str) -> Optional[ResidencyStatus]:
         """_summary_
 
         Args:
@@ -43,7 +45,7 @@ class CustomerCreditScoreService:
         """
         return self._find_from_query(Customer.name == name)  # type: ignore
 
-    def find_by_email(self,  email: str) -> Optional[int]:
+    def find_by_email(self,  email: str) -> Optional[ResidencyStatus]:
         """_summary_
 
         Args:
