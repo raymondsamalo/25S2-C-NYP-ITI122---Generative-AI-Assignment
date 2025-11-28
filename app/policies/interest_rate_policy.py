@@ -14,7 +14,7 @@ class InterestRatePolicy:
         read and parse Interest rate pdf policy
         """
         modification_timestamp = os.path.getmtime(self.path)
-        if self._data is None or self.mt is None or self.mt< modification_timestamp:
+        if self._data is None or self.mt is None or self.mt != modification_timestamp:
             t=read_pdf(self.path, flavor="network")
             df=t[0].df
             header_row_index= df.index[(df.iloc[:,0]=='Overall Risk') & (df.iloc[:,1]=='Interest Rate')].tolist()[0]
