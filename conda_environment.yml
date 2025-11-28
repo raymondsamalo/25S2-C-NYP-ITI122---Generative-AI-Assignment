@@ -18,3 +18,5 @@ dependencies:
       - chromadb==1.3.0
       - pytest==9.0.1
       - pytest-cov==7.0.0
+      - mesop==1.1.1
+      - pyaml_env==1.2.2

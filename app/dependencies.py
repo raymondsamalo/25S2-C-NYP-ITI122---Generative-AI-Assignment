@@ -2,6 +2,7 @@ import pathlib
 from pyaml_env import parse_config, BaseConfig
 from .db import SqliteDB
 from .services import CustomerInfoService, CustomerAccountStatusService, CustomerCreditScoreService, ResidencyStatusService, PolicyService
+from .langchain import llm_chat
 script_directory = pathlib.Path(__file__).parent
 config_path = script_directory.parent / 'data' / 'config.yml'
 DATA_PATH = (script_directory.parent / 'data').resolve()
@@ -15,3 +16,4 @@ customer_residency_status_service = ResidencyStatusService(db)
 policy_service = PolicyService(
     CONFIG.policies.overall_risk_doc,
     CONFIG.policies.interest_rate_doc)
+llm = llm_chat(CONFIG)
