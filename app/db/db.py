@@ -5,37 +5,65 @@ from sqlalchemy import Engine
 from sqlalchemy.dialects import postgresql  # Works for SQLite too
 from sqlmodel import Column, Field, Session, SQLModel, create_engine, Enum
 
-from app.foundation.design_patterns import singleton
-
-script_directory = pathlib.Path(__file__).parent
-data_path = script_directory.parent.parent / 'data' / 'database.sqlite'
-
 
 class AccountStatus(StrEnum):
+    """
+    Enumeration representing different account statuses.
+    """
     GOOD_STANDING = "Good-standing"
     CLOSED = "Closed"
     DELIQUENT = "Delinquent"
 
 
 class ResidencyStatus(StrEnum):
+    """
+    Enumeration representing different residency statuses.
+    """
     PERMANENT_RESIDENT = "permanent-resident"
     CITIZEN = "citizen"
     NON_RESIDENT = "non-resident"
 
 
 class Customer(SQLModel, table=True):
+    """
+    Represents a customer in the database.  
+    Attributes:
+        ID (int | None): The unique identifier for the customer. This is the primary key.
+        name (str): The name of the customer.
+        email (str): The email address of the customer.
+    """
     ID: int | None = Field(default=None, primary_key=True)
     name: str
     email: str
 
 
 class CustomerCreditScore(SQLModel, table=True):
+    """
+    Represents the credit score of a customer in the database.
+
+    Attributes:
+        ID (int | None): The unique identifier for the customer. This serves as a 
+            foreign key referencing the 'customer.ID' field in the database.
+        credit_score (int | None): The credit score of the customer. Defaults to None.
+    """
     ID: int | None = Field(default=None, primary_key=True,
                            foreign_key='customer.ID')
     credit_score: int | None = None
 
 
 class CustomerAccountStatus(SQLModel, table=True):
+    """
+    CustomerAccountStatus
+
+    This class represents the status of a customer account in the database. 
+    It is a SQLModel table that maps to the database schema.
+
+    Attributes:
+        ID (int | None): The primary key of the table, 
+        which is also a foreign key referencing the `ID` field in the `customer` table.
+        account_status (AccountStatus): The status of the customer account, 
+        represented as an enumeration of type `AccountStatus`.
+    """
     ID: int | None = Field(default=None, primary_key=True,
                            foreign_key='customer.ID')
     account_status:  AccountStatus = Field(
@@ -43,48 +71,57 @@ class CustomerAccountStatus(SQLModel, table=True):
 
 
 class CustomerPRStatus(SQLModel, table=True):
+    """
+    CustomerPRStatus is a database model representing the PR (Permanent Residency) 
+    status of a customer.
+
+    Attributes:
+        ID (int | None): The primary key of the table, 
+        which is also a foreign key referencing the `ID` field in the `customer` table.
+        pr_status (bool): A boolean field indicating the PR status of the customer.
+    """
     ID: int | None = Field(default=None, primary_key=True,
                            foreign_key='customer.ID')
     pr_status: bool
 
 
 class DB(ABC):
+    """ Abstract database interface """
     def __init__(self) -> None:
         self._engine = None
 
     @property
     def engine(self):
-        """
-        create database engine and ensure only 1 engine per object instance
-        """
+        """ create database engine and ensure only 1 engine per object instance """
         if self._engine is None:
             self._engine = self.create_engine()
         return self._engine
 
     @abstractmethod
     def create_engine(self) -> Engine:
-        """
-        actual engine creation, override this to customise
-        """
+        """ actual engine creation, override this to customise """
 
     def session(self) -> Session:
-        """
-            return database session
-        """
+        """ return database session """
         return Session(self.engine)
 
+    @abstractmethod
     def add_if_not_exist(self, session, record):
-        pass
+        """ insert into database but ignore on conflict"""
 
 
-@singleton
 class SqliteDB(DB):
     """
     Database wrapper
     """
 
-    def __init__(self) -> None:
+    def __init__(self, in_memory:bool=False) -> None:
         super().__init__()
+        if in_memory: # use in-memory database for testing
+            self.path = "sqlite:///:memory:"
+            return
+        script_directory = pathlib.Path(__file__).parent
+        data_path = script_directory.parent.parent / 'data' / 'database.sqlite'
         self.path = "sqlite:///"+data_path.resolve().as_posix()
 
     def create_engine(self):
@@ -107,10 +144,35 @@ class SqliteDB(DB):
         )
         session.exec(statement)
 
+def create_schema_if_not_exists(db:DB):
+    """
+    Creates the database schema if it does not already exist.
+
+    This function initializes the database schema using SQLModel metadata. 
+    It ensures that all tables defined in the SQLModel models are created 
+    in the database associated with the provided database object.
+
+    Args:
+        db: A database object that provides access to the database engine.
+    """
+    SQLModel.metadata.create_all(db.engine)
 
 def create_and_populate_db(db):
     """
-    populate database with initial data
+    Creates and populates the database with initial data.
+
+    This function initializes the database schema using SQLModel metadata and 
+    populates it with predefined records for customers, their account statuses, 
+    credit scores, and PR statuses. It ensures that duplicate records are not 
+    added by using the `db.add_if_not_exist` method.
+
+    Args:
+        db: A database object that provides access to the database engine 
+            and session management.
+
+    Raises:
+        Any exceptions raised during database operations, such as connection 
+        issues or integrity errors, will propagate to the caller.
     """
     SQLModel.metadata.create_all(db.engine)
     records = [
@@ -142,14 +204,3 @@ def create_and_populate_db(db):
             db.add_if_not_exist(session, record)
         session.commit()
 
-
-"""
-The officer logs into several separate banking systems to collect required 
-data: 
--  Credit Score System → to fetch the applicant’s credit score and 
-history. 
--  Account Status System → to check the customer’s existing 
-accounts, outstanding liabilities, repayment records, etc. 
--  Government PR Status System → to check the Permanent 
-Resident (PR) status of non-Singaporean. 
-"""

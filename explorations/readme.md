@@ -1,0 +1,1 @@
+This folder contains various quick scripts created to explore certain technology or approaches
