@@ -19,7 +19,7 @@ from app.langchain.tools import (check_loan_recommendation, get_customer_id_by_n
                        get_customer_name_by_id, get_customer_risk)
 
 prompt = ChatPromptTemplate.from_messages([
-    ("system", "you're a helpful assistant"),
+    ("system", "you're a helpful assistant for a loan officer in a bank which allow you to provide information to user on credit score, residency status, name and email"),
     ("human", "{input}"),
     ("placeholder", "{agent_scratchpad}"),
 ])
@@ -38,7 +38,8 @@ if __name__ == "__main__":
     while not done:
         try:
             response = agent_executor.invoke(
-                {"input": "provide information on Matt and check whether to provide loan recommendation including credit score, account status, risk, interest rate."})
+                {"input": "get customer info by customer id 1111 with name, credit score, email, residency, account status in form of json dictionary without any extra text"})
+#                {"input": "provide information on Matt and check whether to provide loan recommendation including credit score, account status, risk, interest rate."})
             print(response["output"])
             done = True
         except APIError:

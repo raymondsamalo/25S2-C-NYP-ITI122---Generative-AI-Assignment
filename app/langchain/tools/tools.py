@@ -67,14 +67,19 @@ def get_customer_credit_score(customer_id: int) -> Optional[int]:
 @tool
 def get_customer_info_by_id(customer_id: int) -> dict:
     """
-    Get customer credit score, account status, residency 
+    Get customer credit score, account status, residency,email , name
     """
+    info = customer_info_service.find_by_id(customer_id)
+    if info is None:
+        return {}
     residency = customer_residency_status_service.find_by_id(customer_id)
     status = customer_account_status_service.find_by_id(customer_id)
     credit_score = customer_credit_score_service.find_by_id(customer_id)
     status = str(status)
     residency = str(residency)
     return {
+        "email": info.email,
+        "name" : info.name,
         "credit_score": credit_score,
         "status": status,
         "residency": str(residency)
