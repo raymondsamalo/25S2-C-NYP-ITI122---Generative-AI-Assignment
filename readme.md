@@ -31,6 +31,9 @@ To activate this environment, use
 `conda activate lr `
 To deactivate an active environment, use
 `conda deactivate`
+## PyTest
+
+All tests are defined in `tests` folder, use `pytest` to run 
 
 ## Policy Service: Loading PDF Policy Documents
 

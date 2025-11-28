@@ -5,21 +5,29 @@ from sqlmodel import select
 from app.db import DB, CustomerPRStatus, ResidencyStatus
 from app.db.db import Customer
 
+
 class ResidencyStatusService:
     """
     Find customer information 
     """
+
     def __init__(self, db: DB) -> None:
         self.db = db
 
     def _find_from_query(self, condition: BinaryExpression) -> Optional[ResidencyStatus]:
         r = None
         with self.db.session() as session:
-            results = session.exec(select(CustomerPRStatus).join(Customer).where(condition)) # type: ignore
+            results = session.exec(
+                select(Customer).where(condition))  # type: ignore
+            r = results.one_or_none()
+            if r is None:
+                return None  # customer not found
+            results = session.exec(select(CustomerPRStatus).where(
+                CustomerPRStatus.ID == r.ID))  # type: ignore
             r = results.one_or_none()
         if r is None:
             return ResidencyStatus.CITIZEN
-        elif r.pr_status:
+        if r.pr_status:
             return ResidencyStatus.PERMANENT_RESIDENT
         return ResidencyStatus.NON_RESIDENT
 

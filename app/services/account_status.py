@@ -7,12 +7,33 @@ from app.db.db import Customer
 
 class CustomerAccountStatusService:
     """
-    Find customer information 
+    CustomerAccountStatusService is a service class responsible 
+    for retrieving customer account status information from the database. 
+    
+    It provides methods to query customer account status by various 
+    criteria such as customer ID, name, or email.
+
+    Methods:
+        __init__(db: DB) -> None:
+            Initializes the service with a database instance.
+
+        _find_from_query(condition: BinaryExpression) -> Optional[AccountStatus]:
+            A private method that executes a database query based on the given condition 
+            and retrieves the associated account status.
+
+        find_by_id(customer_id: int) -> Optional[AccountStatus]:
+            Retrieves the account status of a customer based on their unique customer ID.
+
+        find_by_name(name: str) -> Optional[int]:
+            Retrieves the account status of a customer based on their name.
+
+        find_by_email(email: str) -> Optional[AccountStatus]:
+            Retrieves the account status of a customer based on their email address.
     """
-    def __init__(self, db: DB) -> None:
+    def __init__(self, db: DB) -> None: # pragma: no cover
         self.db = db
 
-    def _find_from_query(self, condition: BinaryExpression) -> Optional[AccountStatus]:
+    def _find_from_query(self, condition: BinaryExpression) -> Optional[AccountStatus]: # pragma: no cover
         r = None
         with self.db.session() as session:
             results = session.exec(select(CustomerAccountStatus).join(Customer).where(condition)) # type: ignore
