@@ -6,8 +6,11 @@ CONDA_ACTIVATE = source $$(conda info --base)/etc/profile.d/conda.sh ; conda act
 help:
 	@echo "Makefile commands:"
 	@echo "  test      - Run the unit tests using pytest"
-	@echo "  explore   - Run the experiments for using llm to provide recommendation"
+	@echo "  explore_llm_multi   - Run the experiment for using multiple tools with llm"
+	@echo "  explore_llm_single  - Run the experiment for using single tool with llm"
 test:
 	$(CONDA_ACTIVATE) lr && pytest
-explore:
-	$(CONDA_ACTIVATE) lr &&  python3 explorations/exp_local_llm.py
+explore_llm_multi:
+	$(CONDA_ACTIVATE) lr &&  python3 explorations/exp_llm_multi.py
+explore_llm_single:
+	$(CONDA_ACTIVATE) lr &&  python3 explorations/exp_llm_single.py

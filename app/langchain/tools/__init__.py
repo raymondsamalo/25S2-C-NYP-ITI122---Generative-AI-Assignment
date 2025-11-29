@@ -6,3 +6,5 @@ from .tools import (
     get_customer_interest_rate_percentage,
     get_customer_name_by_id
 )
+from .customer_lookup import customer_lookup
+from .policy_lookup import interest_rate_policy_lookup, overall_risk_policy_lookup

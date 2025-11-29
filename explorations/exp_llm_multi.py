@@ -12,7 +12,7 @@ from langchain_core.prompts import ChatPromptTemplate
 
 # Add the parent directory to sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from app.dependencies import llm
+from app.dependencies import llm, CONFIG
 from app.langchain.tools import (check_loan_recommendation, get_customer_id_by_name,
                        get_customer_info_by_id,
                        get_customer_interest_rate_percentage,
@@ -24,6 +24,12 @@ prompt = ChatPromptTemplate.from_messages([
     ("placeholder", "{agent_scratchpad}"),
 ])
 if __name__ == "__main__":
+    if CONFIG.model.choice != "groq":
+        print("Experiment with remote groq LLM and multiple customer info tools")
+        print(f"Using {CONFIG.model.choice} model {CONFIG.model.groq_model}")
+    else:
+        print("Experiment with local LLM and multiple customer info tools")
+        print(f"Using {CONFIG.model.choice} model {CONFIG.model.ollama_model}")
     tools = [
         check_loan_recommendation,
         get_customer_info_by_id,
@@ -38,7 +44,7 @@ if __name__ == "__main__":
     while not done:
         try:
             response = agent_executor.invoke(
-                {"input": "using tools, get customer info by customer id 1111 with name, credit score, email, residency, account status in form of json dictionary without any extra text"})
+                {"input": "using tools, get customer info by customer 1111 and Matt"})
 #                 {"input": "provide information on Matt and check whether to provide loan recommendation including credit score, account status, risk, interest rate."})
             print(response["output"])
             done = True
