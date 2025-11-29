@@ -24,7 +24,7 @@ prompt = ChatPromptTemplate.from_messages([
     ("placeholder", "{agent_scratchpad}"),
 ])
 if __name__ == "__main__":
-    if CONFIG.model.choice != "groq":
+    if CONFIG.model.choice == "groq":
         print("Experiment with remote groq LLM and multiple customer info tools")
         print(f"Using {CONFIG.model.choice} model {CONFIG.model.groq_model}")
     else:

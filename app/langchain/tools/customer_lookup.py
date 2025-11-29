@@ -19,6 +19,7 @@ from .utils import (
 @tool
 def customer_lookup(identifier: str) -> str:
     """ Lookup customer information by identifier which can be customer ID, email, or name.
+    return customer information including customer ID, name, email, residency status, account status, and credit score.
     """
     if identifier is None:
         return format_tool_error("Identifier is required.")
@@ -32,9 +33,10 @@ def customer_lookup(identifier: str) -> str:
     else:
         identifier = identifier.capitalize()
         customer = customer_info_service.find_by_name(identifier)
+        print(f"Lookup by name '{identifier}': {customer}")
+        if customer is None:
+            return format_tool_error(f"Customer '{identifier}' not found.")
         customer_id = customer.ID
-    if customer is None:
-        return format_tool_error("Customer not found.")
     credit_score = if_none(
         customer_credit_score_service.find_by_id(customer_id), "N/A")
     residency = str(
