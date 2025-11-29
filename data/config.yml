@@ -7,5 +7,5 @@ model:
 database:
   path: 'data/database.sqlite'
 policies:
-  interest_rate_doc: 'data/Bank Loan Interest Rate Policy.pdf'
-  overall_risk_doc: 'data/Bank Loan Overall Risk Policy.pdf'
+  interest_rate_doc: 'data/docs/Bank Loan Interest Rate Policy.pdf'
+  overall_risk_doc: 'data/docs/Bank Loan Overall Risk Policy.pdf'

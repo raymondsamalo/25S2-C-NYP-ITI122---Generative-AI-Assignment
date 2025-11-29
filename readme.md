@@ -99,5 +99,5 @@ We probably could use LLM for understanding the data but simple algorithm provid
 
 we are using local llm tinyllama with gguf optimization
 ```bash
-ollama pull pacozaa/tinyllama
+ollama pull gpt-oss:20b
 ```
