@@ -36,6 +36,9 @@ def customer_lookup(identifier: str) -> str:
         customer = customer_info_service.find_by_id(customer_id)
     elif is_valid_email(identifier):
         customer = customer_info_service.find_by_email(identifier)
+        logger.info("Customer lookup  %s return %s", identifier, customer)
+        if customer is None:
+            return format_tool_error(f"Customer with email '{identifier}' not found.")
         customer_id = customer.ID
     else:
         identifier = identifier.capitalize()

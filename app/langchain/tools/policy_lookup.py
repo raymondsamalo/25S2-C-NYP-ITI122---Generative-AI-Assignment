@@ -48,10 +48,13 @@ def interest_rate_policy_lookup(risk: Optional[str]) -> str:
 
 @tool
 def overall_risk_policy_lookup(credit_score: Optional[str]=None, account_status: Optional[str]=None, customer_info:Optional[dict]=None ) -> str:
-    """ Lookup overall risk with optional credit score string and optional account status string.
-        Alternatively, customer_info dictionary can be provided containing credit_score and account_status keys.
+    """ Lookup overall risk with optional credit score string, optional account status string or optional customer_info dictionary.
+        return a formatted table of overall risk policy information containing credit score range, account status, and overall risk level.
         If both credit score and account status are provided, return the overall risk level.
-        If any of the parameters is missing or invalid, return the overall risk policy information table.
+        If any of the parameters is missing or invalid but customer_info is provided,
+         use the customer_info dictionary to get the credit score and account status.
+        If both parameters are missing or invalid, return the full overall risk policy information.
+        if one of the parameters is missing or invalid, return an error message.
     """
     if customer_info is not None:
         credit_score = customer_info.get("credit_score", None)
