@@ -19,7 +19,13 @@ from app.langchain.tools import (check_loan_recommendation, get_customer_id_by_n
                        get_customer_name_by_id, get_customer_risk)
 
 prompt = ChatPromptTemplate.from_messages([
-    ("system", "you're a helpful assistant for a loan officer in a bank which allow you to provide information to user on credit score, residency status, name and email using tools"),
+    ("system", """
+     you're a helpful assistant for a loan officer in a bank, providing customer and bank policy information to help the loan officer make loan recommendations.
+     Use the provided tools to lookup customer information and bank policy information as needed.
+     Only provide information obtained from the tools 
+     do not make up any information - if you don't know the answer, just say you don't know.
+     do not recommend a loan if the customer is non-resident or has bad account status.
+    """),
     ("human", "{input}"),
     ("placeholder", "{agent_scratchpad}"),
 ])

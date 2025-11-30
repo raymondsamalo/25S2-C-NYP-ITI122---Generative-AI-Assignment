@@ -15,8 +15,9 @@ dependencies:
       - langchain-openai==1.0.1
       - aiologic==0.15.0
       - camelot-py==1.0.9
-      - chromadb==1.3.0
+      - pypdf==5.9.0
+      - streamlit==1.51.0
       - pytest==9.0.1
       - pytest-cov==7.0.0
-      - mesop==1.1.1
       - pyaml_env==1.2.2
+      - htbuilder==0.9.0

@@ -15,14 +15,21 @@ from .utils import (
     is_valid_customer_id, is_valid_email
 )
 
+import logging
+
+import logging
+logger = logging.getLogger(__name__)
 
 @tool
 def customer_lookup(identifier: str) -> str:
     """ Lookup customer information by identifier which can be customer ID, email, or name.
     return customer information including customer ID, name, email, residency status, account status, and credit score.
     """
+    logger.info("Customer lookup tool called with identifier: %s", identifier)
     if identifier is None:
-        return format_tool_error("Identifier is required.")
+        error = format_tool_error("Identifier is required.")
+        logger.info("Customer lookup error: %s", error)
+        return error
     identifier = identifier.strip()
     if is_valid_customer_id(identifier):
         customer_id = int(identifier)
@@ -33,7 +40,7 @@ def customer_lookup(identifier: str) -> str:
     else:
         identifier = identifier.capitalize()
         customer = customer_info_service.find_by_name(identifier)
-        print(f"Lookup by name '{identifier}': {customer}")
+        logger.info("Customer lookup  %s return %s", identifier, customer)
         if customer is None:
             return format_tool_error(f"Customer '{identifier}' not found.")
         customer_id = customer.ID
@@ -51,4 +58,5 @@ def customer_lookup(identifier: str) -> str:
         "account_status": account_status,
         "credit_score": credit_score
     }
+    logger.info("Customer lookup  %s return %s", identifier, customer_dict)
     return format_tool_output("Customer Information", customer_dict)

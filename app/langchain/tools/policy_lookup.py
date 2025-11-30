@@ -28,7 +28,9 @@ from .utils import (
 
 @tool
 def interest_rate_policy_lookup(risk: Optional[str]) -> str:
-    """ Lookup interest rate policy information with optional risk level.
+    """ Lookup interest rate policy information with optional risk level string.
+        return a formatted table of interest rate policy information containing overall risk and interest rate percentage.
+        or if risk level is provided, return the interest rate percentage for the given risk level.
     """
     if risk is None or risk.strip() == "":
         policy_dict = policy_service.get_interest_rate_policy_data()
@@ -45,9 +47,15 @@ def interest_rate_policy_lookup(risk: Optional[str]) -> str:
 
 
 @tool
-def overall_risk_policy_lookup(credit_score: Optional[str], account_status: Optional[str]) -> str:
-    """ Lookup overall risk with optional credit score and account status.
+def overall_risk_policy_lookup(credit_score: Optional[str]=None, account_status: Optional[str]=None, customer_info:Optional[dict]=None ) -> str:
+    """ Lookup overall risk with optional credit score string and optional account status string.
+        Alternatively, customer_info dictionary can be provided containing credit_score and account_status keys.
+        If both credit score and account status are provided, return the overall risk level.
+        If any of the parameters is missing or invalid, return the overall risk policy information table.
     """
+    if customer_info is not None:
+        credit_score = customer_info.get("credit_score", None)
+        account_status = customer_info.get("account_status", None)
     if credit_score is None or credit_score.strip() == "" or account_status is None or account_status.strip() == "":
         policy_dict = policy_service.get_overall_risk_policy_data()
         return format_policy_data("Overall Risk Policy Information", policy_dict)

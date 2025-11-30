@@ -1,0 +1,35 @@
+i am trying to create loan risk assesment with generative AI, Current Business Workflow 
+
+1. A loan officer or risk analyst receives a loan application and must determine the
+applicant’s risk level and the applicable interest rate.
+2. The officer logs into several separate banking systems to collect required data, such as
+credit score, account status and nationality. These are often different interfaces, each
+3. Certain information, such as interest rate determination and overall risk evaluation
+criteria, is not stored in structured databases. Instead, it resides in periodically updated
+PDF documents such as loan interest rate policies and risk categorization policies. These
+documents are lengthy and unstructured, requiring manual searching.
+4. Once all the information is gathered, the analyst manually interprets and combines the
+data and policy rules to form a judgment on the risk level, applicable interest rate, and
+rationale behind the decision.
+5. The analyst drafts a final response or decision note explaining the risk assessment and
+loan terms, which is communicated internally or to the applicant.
+
+
+Could you help me to create sample application using streamlit and langchain to do this
+requiring separate searches, downloads, or data entry.
+
+I would like a chat bot interface that allow user to ask question in human language
+I would like some button to provide shortcuts
+There are already langchain tools that I provide to the applications written as python function:
+- interest_rate_policy_lookup(risk: Optional[str]) 
+    Lookup interest rate policy information with optional risk level.
+    return a formatted table of interest rate policy information containing overall risk and interest rate percentage.
+    or if risk level is provided, return the interest rate percentage for the given risk level.
+- overall_risk_policy_lookup(credit_score: Optional[str], account_status: Optional[str]) 
+    Lookup overall risk with optional credit score and account status.
+    If both credit score and account status are provided, return the overall risk level.
+    If any of the parameters is missing or invalid, return the overall risk policy information table.
+- customer_lookup(identifier: str) -> str:
+    Lookup customer information by identifier which can be customer ID, email, or name.
+    return customer information including customer ID, name, email, residency status, account status, and credit score.
+    
