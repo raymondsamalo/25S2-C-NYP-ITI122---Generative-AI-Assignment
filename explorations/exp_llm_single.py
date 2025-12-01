@@ -76,7 +76,7 @@ if __name__ == "__main__":
                     break
                 except APIError as e:
                     print(
-                        f"A general API Error occurred: {e.message} on attempt {retry+1}/{max_retries}. Retrying...")
+                        f"A general API Error occurred: {e.message} on attempt {retry+1}/{MAX_RETRIES}. Retrying...")
                     time.sleep(2)  # wait before retrying
         except ValidationError as ve:
             print(f"Validation Error: {str(ve)}")

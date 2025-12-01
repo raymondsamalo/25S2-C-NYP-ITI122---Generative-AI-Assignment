@@ -1,7 +1,7 @@
 
 
-from abc import ABC
-from typing import Any, Generator, Iterator
+from abc import ABC, abstractmethod
+from typing import Any, Iterator
 
 from langchain_core.language_models.chat_models import BaseChatModel
 

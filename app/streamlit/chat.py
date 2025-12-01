@@ -1,6 +1,20 @@
 import streamlit as st
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(
+    os.path.dirname(os.path.abspath(__file__)))))
+
+from app.dependencies import CONFIG
+from app.langchain.llm import llm_chat
+from app.agents.single_agent import LoanAgent
+
+
 
 class ChatApp:
+    def __init__(self) -> None:
+        self.llm = llm_chat(CONFIG)
+        self.agent = LoanAgent(self.llm)
+
     def setup(self):
         st.set_option("client.toolbarMode", "minimal")
         if "history" not in st.session_state:
@@ -13,7 +27,7 @@ class ChatApp:
         )
 
         with title_row:
-            st.title("Loan Risk Assistant",anchor=False,width="stretch")
+            st.title("🏦 Loan Risk Assistant", anchor=False, width="stretch")
 
     def show_history(self):
         for message in st.session_state.history:
@@ -22,17 +36,26 @@ class ChatApp:
 
     def respond(self, user_input):
         # Placeholder for response generation logic
-        return f"This is a placeholder response. {user_input}"
-    
+        response = self.agent.get_response(user_input)
+        return response
+
+    def has_history(self):
+        return "history" in st.session_state and len(st.session_state.history) > 0
+
     def add_history(self, role, content):
         st.session_state.history.append({"role": role, "content": content})
-    
+
+    def show_intro(self):
+        if not self.has_history():
+            with st.chat_message("assistant"):
+                st.write("Hello 👋 I am a loan assistant, I could help to provide customer info, bank risk policy or interest policy and perform loan recomendation analysis")
+
     def run(self):
         self.setup()
         self.show_title()
+        self.show_intro()
         self.show_history()
-        with st.chat_message("assistant"):
-            st.write("Hello 👋")
+
         self.main_loop()
 
     def main_loop(self):
@@ -45,7 +68,8 @@ class ChatApp:
             response = self.respond(prompt)
             with st.chat_message("assistant"):
                 st.markdown(response)
-            self.add_history("user", prompt)
+            self.add_history("assistant", response)
+
 
 if __name__ == "__main__":
     app = ChatApp()

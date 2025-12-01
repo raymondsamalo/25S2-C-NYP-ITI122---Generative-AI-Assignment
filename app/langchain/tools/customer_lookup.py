@@ -37,16 +37,15 @@ def customer_lookup(identifier: str) -> str:
     elif is_valid_email(identifier):
         customer = customer_info_service.find_by_email(identifier)
         logger.info("Customer lookup  %s return %s", identifier, customer)
-        if customer is None:
-            return format_tool_error(f"Customer with email '{identifier}' not found.")
-        customer_id = customer.ID
     else:
         identifier = identifier.capitalize()
         customer = customer_info_service.find_by_name(identifier)
         logger.info("Customer lookup  %s return %s", identifier, customer)
-        if customer is None:
-            return format_tool_error(f"Customer '{identifier}' not found.")
-        customer_id = customer.ID
+    if customer is None:
+        return format_tool_error(f"Customer '{identifier}' not found.")
+    if customer.ID is None:
+        return format_tool_error(f"Customer '{identifier}' has invalid record. Please inform bank IT team")
+    customer_id = customer.ID
     credit_score = if_none(
         customer_credit_score_service.find_by_id(customer_id), "N/A")
     residency = str(

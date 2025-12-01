@@ -15,6 +15,7 @@ from pydantic import ValidationError
 from app.agents.agent import Agent
 from app.langchain.tools import (customer_lookup, interest_rate_policy_lookup,
                                  overall_risk_policy_lookup)
+from langchain_core.language_models.chat_models import BaseChatModel
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -32,11 +33,12 @@ SYSTEM_PROMPT = """
      - use the overall_risk_policy_lookup tool to get the overall risk level based on the customer's credit score and account status.
      - use the interest_rate_policy_lookup tool to get the interest rate percentage based on the customer's overall risk level.
      - provide a final recommendation on whether to approve the loan or not, and the interest rate percentage if approved.
-        Always use the tools to get the information you need.
+     - do not recommend loan to a non-resident but still show the interest rate and other information
 
      Do not make up any customer information or bank policy information.
      Do not guess the overall risk level or interest rate percentage.
-     Always use the tools to get the information.
+     Always provide interest rate percentage from interest_rate_policy_lookup only.
+     
      If the user provides incomplete or invalid customer identifier,
      inform the user to provide a valid customer ID, email, or name.
     
@@ -45,6 +47,7 @@ SYSTEM_PROMPT = """
      Always explain your reasoning step by step.
      Always summarize your final recommendation clearly.
      Be concise, professional and polite in your response.
+     Do not assume that user is asking for loan recommendation for a customer unless explicitly asked.
      """
 
 
@@ -61,6 +64,7 @@ class LoanAgent(Agent):
         self.thread_id = str(threading.get_ident())
 
     def get_response(self, query: str) -> str:
+        responses = []
         try:
             for retry in range(MAX_RETRIES):
                 try:
@@ -70,7 +74,7 @@ class LoanAgent(Agent):
                     for message in result["messages"]:
                         if isinstance(message, AIMessage):
                             responses.append(message.content)
-                    return "\n".join(responses)
+                    break
                 except APIError as e:
                     logger.error(
                         "A general API Error occurred: %s on attempt %d/%d. Retrying...", str(e), retry+1, MAX_RETRIES)
@@ -81,6 +85,7 @@ class LoanAgent(Agent):
         except Exception as e:
             logger.error(f"Unexpected Error: {str(e)}")
             return f"Unexpected error kindly {str(e)}, feel free to try again."
+        return "\n".join(responses)
 
     def stream_response(self, query: str) -> Iterator[dict[str, Any] | Any]:
         try:
