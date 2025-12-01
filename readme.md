@@ -97,7 +97,13 @@ We probably could use LLM for understanding the data but simple algorithm provid
 
 # LLM
 
-we are using local llm tinyllama with gguf optimization
+Locally we are using `llama3.2:latest` as it is the only model that we found able to call tools and run on our 8GB M1 laptop. 
+
+However `llama3.2:latest` is prone to hallucination.
+We discover by setting temperature=0, the hallucination is drastically reduced.
+
 ```bash
-ollama pull gpt-oss:20b
+ollama pull llama3.2:latest
 ```
+
+For remote machine we are using groq running `openai/gpt-oss-20b`

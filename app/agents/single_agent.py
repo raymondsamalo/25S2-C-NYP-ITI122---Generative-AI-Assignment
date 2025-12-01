@@ -5,8 +5,8 @@ import logging
 
 
 from app.agents.agent import Agent
-from app.langchain.tools import (customer_lookup, interest_rate_policy_lookup,
-                                 overall_risk_policy_lookup, loan_assement)
+from app.langchain.tools import (customer_lookup, interest_rate_for_risk,
+                                 overall_risk_policy_lookup)
 from langchain_core.language_models.chat_models import BaseChatModel
 
 logging.basicConfig(level=logging.INFO)
@@ -39,6 +39,7 @@ SYSTEM_PROMPT = """
      Always summarize your final recommendation clearly.
      Be concise, professional and polite in your response.
      Do not assume that user is asking for loan recommendation for a customer unless explicitly asked.
+          Provide all numerical results using exactly 3 decimal places.
      """
 
 
@@ -47,6 +48,6 @@ class LoanAgent(Agent):
     """
 
     def __init__(self, model: BaseChatModel):
-        tools = [customer_lookup, interest_rate_policy_lookup,
+        tools = [customer_lookup, interest_rate_for_risk,
                  overall_risk_policy_lookup]
         super().__init__(model, tools=tools, system_prompt=SYSTEM_PROMPT)

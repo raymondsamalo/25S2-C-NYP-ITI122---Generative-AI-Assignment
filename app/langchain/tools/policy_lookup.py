@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 
 @tool
 def interest_rate_policy() -> str:
-    """ provide a formatted table of interest rate policy information containing overall risk and interest rate percentage.
+    """ provide a formatted table of interest rate policy information.
     """
     logger.info("interest_rate_policy called")
     policy_dict = policy_service.get_interest_rate_policy_data()
@@ -37,11 +37,18 @@ def interest_rate_policy() -> str:
     return result
 
 @tool
-def interest_rate_policy_lookup(risk: str) -> str:
-    """ Lookup interest rate policy information with optional risk level string.
-        return the interest rate percentage for the given risk level.
+def overall_risk_policy() -> str:
+    """ provide a formatted table of risk  policy information.
     """
-    logger.info("interest_rate_policy_lookup called")
+    logger.info("overall_risk_policy called")
+    policy_dict = policy_service.get_overall_risk_policy_data()
+    return format_policy_data("Overall Risk Policy Information", policy_dict)
+
+@tool
+def interest_rate_for_risk(risk: str) -> str:
+    """ show interest rate the given risk level.
+    """
+    logger.info("interest_rate_for_risk called")
     if risk is None or risk.strip() == "":
         result = format_tool_error(f"invalid risk {risk}")
     else:
@@ -56,19 +63,10 @@ def interest_rate_policy_lookup(risk: str) -> str:
 
 
 @tool
-def overall_risk_policy_lookup(credit_score: Optional[int]=None, account_status: Optional[str]=None, customer_info:Optional[dict]=None ) -> str:
-    """ Lookup overall risk with optional credit score string, optional account status string or optional customer_info dictionary.
-        return a formatted table of overall risk policy information containing credit score range, account status, and overall risk level.
-        If both credit score and account status are provided, return the overall risk level.
-        If any of the parameters is missing or invalid but customer_info is provided,
-         use the customer_info dictionary to get the credit score and account status.
-        If both parameters are missing or invalid, return the full overall risk policy information.
-        if one of the parameters is missing or invalid, return an error message.
+def overall_risk_policy_lookup(credit_score: int, account_status: str ) -> str:
+    """ Lookup overall risk with  credit score string,  account status string
     """
     logger.info("overall_risk_policy_lookup called")
-    if customer_info is not None:
-        credit_score = customer_info.get("credit_score", None)
-        account_status = customer_info.get("account_status", None)
     if credit_score is None  or account_status is None or account_status.strip() == "":
         policy_dict = policy_service.get_overall_risk_policy_data()
         return format_policy_data("Overall Risk Policy Information", policy_dict)
@@ -78,6 +76,7 @@ def overall_risk_policy_lookup(credit_score: Optional[int]=None, account_status:
     policy_dict = policy_service.get_risk_policy(credit_score, account_status)
     if policy_dict is None:
         return format_tool_error("Unexpected error unable to find risk policy")
-    if "error" in policy_dict.keys():
-        return format_tool_error(policy_dict["error"])
+    error = policy_dict.get("error",None)
+    if error:
+        return format_tool_error(error)
     return format_policy_data("Overall Risk Policy Information", policy_dict)

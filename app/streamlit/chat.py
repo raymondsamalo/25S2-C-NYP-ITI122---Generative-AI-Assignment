@@ -23,6 +23,10 @@ class ChatApp:
         st.set_option("client.toolbarMode", "minimal")
         if "history" not in st.session_state:
             st.session_state.history = []
+        if 'processing' not in st.session_state:
+            st.session_state.processing = False
+        if 'prompt' not in st.session_state:
+            st.session_state.prompt = ''
 
     def show_title(self):
         title_row = st.container(
@@ -70,16 +74,22 @@ class ChatApp:
 
     def main_loop(self):
         """ our main loop  """
-        prompt = st.chat_input("Say something")
-        if prompt:
-            with st.chat_message("user"):
-                st.write(prompt)
+        if prompt := st.chat_input("Say something", disabled=st.session_state.processing):
+            st.session_state.processing = True
+            st.session_state.prompt = prompt
             self.add_history("user", prompt)
-            response = self.respond(prompt)
+            st.rerun() # Rerun to disable the chat_input immediately
+        if st.session_state.processing:
+            # Simulate AI response generation
+            with st.spinner("Generating response..."):
+                prompt = st.session_state.prompt
+                response = self.respond(prompt)
             with st.chat_message("assistant"):
                 st.markdown(response)
             self.add_history("assistant", response)
-
+            st.session_state.processing = False
+            st.rerun() # Rerun to display assistant's message and re-enable chat_input
+        
 
 if __name__ == "__main__":
     app = ChatApp()

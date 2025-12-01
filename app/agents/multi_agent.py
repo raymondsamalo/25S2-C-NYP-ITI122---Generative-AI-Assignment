@@ -3,7 +3,7 @@ import threading
 
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.tools import BaseTool, tool
-from app.langchain.tools import (customer_lookup, interest_rate_policy_lookup,
+from app.langchain.tools import (customer_lookup, interest_rate_for_risk,
                                  overall_risk_policy_lookup, loan_assement)
 from app.agents.agent import Agent
 
@@ -38,7 +38,7 @@ class OchestratorAgent(Agent):
             "Use the provided tool to retrieve bank interest rate policy or determine customer interest rate. "
             "Only return information from the tool output."
         )
-        interest_policy_agent = SpecializedAgent(model, tools=[interest_rate_policy_lookup], system_prompt=interest_policy_agent_prompt)
+        interest_policy_agent = SpecializedAgent(model, tools=[interest_rate_for_risk], system_prompt=interest_policy_agent_prompt)
 
         @tool
         def agent_risk_policy(query: str|dict):
