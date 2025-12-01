@@ -36,7 +36,12 @@ def customer_lookup(identifier: str) -> str:
         customer = customer_info_service.find_by_email(identifier)
         logger.info("Customer lookup  %s return %s", identifier, customer)
     else:
+        if identifier.find("email")!=-1:
+            # sometimes our llm pass "<name> email" as identifier
+            identifier.replace("email","")
+            identifier = identifier.strip()
         identifier = identifier.capitalize()
+
         customer = customer_info_service.find_by_name(identifier)
         logger.info("Customer lookup  %s return %s", identifier, customer)
     if customer is None:

@@ -7,12 +7,14 @@ sys.path.append(os.path.dirname(os.path.dirname(
 from app.dependencies import CONFIG
 from app.langchain.llm import llm_chat, llm_config_info
 from app.agents.single_agent import LoanAgent
+from app.agents.multi_agent import OchestratorAgent
 
 class ChatApp:
     def __init__(self) -> None:
         self.llm_info = llm_config_info(CONFIG)
         self.llm = llm_chat(CONFIG)
-        self.agent = LoanAgent(self.llm)
+        #self.agent = LoanAgent(self.llm)
+        self.agent = OchestratorAgent(self.llm)
 
     def setup(self):
         st.set_option("client.toolbarMode", "minimal")

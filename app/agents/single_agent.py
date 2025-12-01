@@ -2,24 +2,15 @@
 
 import logging
 # in subfolder/my_script.py
-import threading
-import time
-from typing import Any, Iterator
 
-from groq import APIError
-from langchain.agents import create_agent
-from langchain.messages import AIMessage
-from langgraph.checkpoint.memory import InMemorySaver
-from pydantic import ValidationError
 
 from app.agents.agent import Agent
 from app.langchain.tools import (customer_lookup, interest_rate_policy_lookup,
-                                 overall_risk_policy_lookup)
+                                 overall_risk_policy_lookup, loan_assement)
 from langchain_core.language_models.chat_models import BaseChatModel
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-MAX_RETRIES = 3
 SYSTEM_PROMPT = """
      you are a helpful assistant for a loan officer in a bank. 
      You are able to provide customer information and bank policy information.
@@ -56,53 +47,6 @@ class LoanAgent(Agent):
     """
 
     def __init__(self, model: BaseChatModel):
-        super().__init__(model)
         tools = [customer_lookup, interest_rate_policy_lookup,
                  overall_risk_policy_lookup]
-        self.agent = create_agent(
-            model, tools=tools, system_prompt=SYSTEM_PROMPT, checkpointer=InMemorySaver())
-        self.thread_id = str(threading.get_ident())
-
-    def get_response(self, query: str) -> str:
-        responses = []
-        try:
-            for retry in range(MAX_RETRIES):
-                try:
-                    result = self.agent.invoke({"messages": [{"role": "user", "content": query}]},
-                                               {"configurable": {"thread_id": self.thread_id}})
-                    responses = []
-                    for message in result["messages"]:
-                        if isinstance(message, AIMessage):
-                            responses.append(message.content)
-                    break
-                except APIError as e:
-                    logger.error(
-                        "A general API Error occurred: %s on attempt %d/%d. Retrying...", str(e), retry+1, MAX_RETRIES)
-                    time.sleep(0.2)  # wait before retrying
-        except ValidationError as ve:
-            logger.error(f"Validation Error: {str(ve)}")
-            return "Please rephrase the prompt and try again."
-        except Exception as e:
-            logger.error(f"Unexpected Error: {str(e)}")
-            return f"Unexpected error kindly {str(e)}, feel free to try again."
-        return "\n".join(responses)
-
-    def stream_response(self, query: str) -> Iterator[dict[str, Any] | Any]:
-        try:
-            for retry in range(MAX_RETRIES):
-                try:
-                    result = self.agent.stream({"messages": [{"role": "user", "content": query}]},
-                                               {"configurable": {"thread_id": self.thread_id}}, stream_mode="messages")
-                    for message in result["messages"]:
-                        if isinstance(message, AIMessage):
-                             yield message.content
-                except APIError as e:
-                    logger.error(
-                        "A general API Error occurred: %s on attempt %d/%d. Retrying...", str(e), retry+1, MAX_RETRIES)
-                    time.sleep(0.2)  # wait before retrying
-        except ValidationError as ve:
-            logger.error(f"Validation Error: {str(ve)}")
-            yield "Please rephrase the prompt and try again."
-        except Exception as e:
-            logger.error(f"Unexpected Error: {str(e)}")
-            yield f"Unexpected error kindly {str(e)}, feel free to try again."
+        super().__init__(model, tools=tools, system_prompt=SYSTEM_PROMPT)

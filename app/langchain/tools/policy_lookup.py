@@ -10,7 +10,6 @@ from .utils import (
     format_policy_data,
     if_none,
     is_valid_account_status,
-    is_valid_credit_score,
 )
 
 

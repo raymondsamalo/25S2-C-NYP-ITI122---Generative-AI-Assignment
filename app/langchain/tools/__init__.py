@@ -8,3 +8,4 @@ from .tools import (
 )
 from .customer_lookup import customer_lookup
 from .policy_lookup import interest_rate_policy_lookup, overall_risk_policy_lookup
+from .loan_assement import loan_assement
