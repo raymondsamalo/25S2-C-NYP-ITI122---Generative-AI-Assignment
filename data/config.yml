@@ -1,4 +1,5 @@
 ---
+multi_agent: True
 model:
   # choice: ollama
   choice: groq

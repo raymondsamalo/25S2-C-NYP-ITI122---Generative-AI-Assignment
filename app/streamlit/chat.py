@@ -1,6 +1,6 @@
-import streamlit as st
 import sys
 import os
+import streamlit as st
 sys.path.append(os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.abspath(__file__)))))
 
@@ -13,9 +13,11 @@ class ChatApp:
     def __init__(self) -> None:
         self.llm_info = llm_config_info(CONFIG)
         self.llm = llm_chat(CONFIG)
-        self.agent = LoanAgent(self.llm)
-        # self.agent = OchestratorAgent(self.llm)
-
+        if CONFIG.multi_agent:
+            self.agent = OchestratorAgent(self.llm)
+        else:    
+            self.agent = LoanAgent(self.llm)
+        
     def setup(self):
         st.set_option("client.toolbarMode", "minimal")
         if "history" not in st.session_state:
