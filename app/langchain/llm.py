@@ -21,3 +21,11 @@ def llm_chat(config: BaseConfig, temperature=0.1) -> BaseChatModel:
         llm = ChatOllama(model=config.model.ollama_model,
                          temperature=temperature)
     return llm
+
+def llm_config_info(config: BaseConfig):
+    """ return llm config information"""
+    if config.model.choice == "groq":
+        model=config.model.groq_model
+    else:
+        model=config.model.ollama_model
+    return f"{config.model.choice} model {model}"

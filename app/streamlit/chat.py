@@ -5,13 +5,12 @@ sys.path.append(os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.abspath(__file__)))))
 
 from app.dependencies import CONFIG
-from app.langchain.llm import llm_chat
+from app.langchain.llm import llm_chat, llm_config_info
 from app.agents.single_agent import LoanAgent
-
-
 
 class ChatApp:
     def __init__(self) -> None:
+        self.llm_info = llm_config_info(CONFIG)
         self.llm = llm_chat(CONFIG)
         self.agent = LoanAgent(self.llm)
 
@@ -48,23 +47,24 @@ class ChatApp:
     def show_intro(self):
         if not self.has_history():
             with st.chat_message("assistant"):
-                st.write("Hello 👋 I am a loan assistant, I could help to provide customer info, bank risk policy or interest policy and perform loan recomendation analysis")
+                st.write(f"""Hello 👋 I am a loan assistant running on {self.llm_info}. 
+                             I could help to provide customer info, bank risk policy or interest policy and perform loan recomendation analysis
+                         """)
 
     def run(self):
         self.setup()
         self.show_title()
         self.show_intro()
         self.show_history()
-
         self.main_loop()
 
     def main_loop(self):
+        """ our main loop  """
         prompt = st.chat_input("Say something")
         if prompt:
             with st.chat_message("user"):
                 st.write(prompt)
             self.add_history("user", prompt)
-
             response = self.respond(prompt)
             with st.chat_message("assistant"):
                 st.markdown(response)

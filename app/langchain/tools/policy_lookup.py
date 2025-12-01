@@ -47,7 +47,7 @@ def interest_rate_policy_lookup(risk: Optional[str]) -> str:
 
 
 @tool
-def overall_risk_policy_lookup(credit_score: Optional[str]=None, account_status: Optional[str]=None, customer_info:Optional[dict]=None ) -> str:
+def overall_risk_policy_lookup(credit_score: Optional[int]=None, account_status: Optional[str]=None, customer_info:Optional[dict]=None ) -> str:
     """ Lookup overall risk with optional credit score string, optional account status string or optional customer_info dictionary.
         return a formatted table of overall risk policy information containing credit score range, account status, and overall risk level.
         If both credit score and account status are provided, return the overall risk level.
@@ -59,16 +59,13 @@ def overall_risk_policy_lookup(credit_score: Optional[str]=None, account_status:
     if customer_info is not None:
         credit_score = customer_info.get("credit_score", None)
         account_status = customer_info.get("account_status", None)
-    if credit_score is None or credit_score.strip() == "" or account_status is None or account_status.strip() == "":
+    if credit_score is None  or account_status is None or account_status.strip() == "":
         policy_dict = policy_service.get_overall_risk_policy_data()
         return format_policy_data("Overall Risk Policy Information", policy_dict)
-    credit_score = credit_score.strip()
     account_status = account_status.strip().capitalize()
-    if not is_valid_credit_score(credit_score):
-        return format_tool_error("Invalid credit score. It should be an integer between 300 and 850.")
     if not is_valid_account_status(account_status):
         return format_tool_error("Invalid account status. It should be one of Good-standing, Delinquent, Closed.")
-    policy_dict = policy_service.get_risk_policy(int(credit_score), account_status)
+    policy_dict = policy_service.get_risk_policy(credit_score, account_status)
     if "error" in policy_dict:
         return format_tool_error(policy_dict["error"])
     return format_policy_data("Overall Risk Policy Information", policy_dict)

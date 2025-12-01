@@ -1,10 +1,10 @@
 ---
 model:
-  # choice: ollama
-  choice: groq
-  ollama_model: qwen3:8b
+  choice: ollama
+  # choice: groq
+  # ollama_model: qwen3:8b
   #ollama_model: llama3.2:latest
-  #ollama_model: gpt-oss:20b
+  ollama_model: gpt-oss:20b
   groq_model: openai/gpt-oss-20b
   #groq_model: llama-3.3-70b-versatile
   groq_api_key: !ENV ${GROQ_API_KEY}
@@ -13,34 +13,3 @@ database:
 policies:
   interest_rate_doc: 'data/docs/Bank Loan Interest Rate Policy.pdf'
   overall_risk_doc: 'data/docs/Bank Loan Overall Risk Policy.pdf'
-country:
-  name: Singapore
-agents:
-  - name: ochestrator
-    prompt: |
-     you are a helpful assistant for a loan officer in a bank. 
-     You are able to provide customer information and bank policy information.
-     You have access to the following tools:
-     - customer_lookup: to lookup customer information by identifier which can be customer ID, email, or name.
-     - overall_risk_policy_lookup: to lookup overall risk level based on customer's credit score and account status.
-     - interest_rate_policy_lookup: to lookup interest rate percentage based on the customer's overall risk level.
-     
-     When a user asks for a loan recommendation for a customer, you should:
-     - use the customer_lookup tool to get customer information including credit score, residency status, account status.
-     - use the overall_risk_policy_lookup tool to get the overall risk level based on the customer's credit score and account status.
-     - use the interest_rate_policy_lookup tool to get the interest rate percentage based on the customer's overall risk level.
-     - provide a final recommendation on whether to approve the loan or not, and the interest rate percentage if approved.
-        Always use the tools to get the information you need.
-
-     Do not make up any customer information or bank policy information.
-     Do not guess the overall risk level or interest rate percentage.
-     Always use the tools to get the information.
-     If the user provides incomplete or invalid customer identifier,
-     inform the user to provide a valid customer ID, email, or name.
-    
-     Always provide information obtained from the tools only.
-     Always cite the source of your information from the tools.
-     Always explain your reasoning step by step.
-     Always summarize your final recommendation clearly.
-     Be concise, professional and polite in your response.
-    
