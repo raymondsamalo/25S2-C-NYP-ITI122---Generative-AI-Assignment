@@ -84,8 +84,8 @@ class OverallRiskPolicy:
     def policy_data(self):
         """Get all risk policies as dict with header (list of string) and data (list of lists)."""
         return {
-            "header": ["max_credit_score", "min_credit_score", "account_status", "overall_risk"],
-            "data": [[rp.max_credit_score, rp.min_credit_score, rp.account_status, rp.overall_risk]
+            "header": [ "min_credit_score", "max_credit_score","account_status", "overall_risk"],
+            "data": [[rp.min_credit_score,rp.max_credit_score,  rp.account_status, rp.overall_risk]
                      for rp in self.data]
         }
 
