@@ -18,7 +18,7 @@ SYSTEM_PROMPT = """
      - customer_lookup: to lookup customer information by identifier which can be customer ID, email, or name.
      - overall_risk_policy_lookup: to lookup overall risk level based on customer's credit score and account status.
      - interest_rate_policy_lookup: to lookup interest rate percentage based on the customer's overall risk level.
-     
+
      When a user asks for a loan recommendation for a customer, you should:
      - use the customer_lookup tool to get customer information including credit score, residency status, account status.
      - use the overall_risk_policy_lookup tool to get the overall risk level based on the customer's credit score and account status.
@@ -48,5 +48,5 @@ class LoanAgent(Agent):
 
     def __init__(self, model: BaseChatModel):
         tools = [customer_lookup, interest_rate_policy_lookup,
-                 overall_risk_policy_lookup, loan_assement]
+                 overall_risk_policy_lookup]
         super().__init__(model, tools=tools, system_prompt=SYSTEM_PROMPT)

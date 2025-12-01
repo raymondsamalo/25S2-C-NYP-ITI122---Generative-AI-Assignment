@@ -13,7 +13,8 @@ class ChatApp:
     def __init__(self) -> None:
         self.llm_info = llm_config_info(CONFIG)
         self.llm = llm_chat(CONFIG)
-        if CONFIG.multi_agent:
+        self.multi_agent = CONFIG.multi_agent
+        if self.multi_agent:
             self.agent = OchestratorAgent(self.llm)
         else:    
             self.agent = LoanAgent(self.llm)
@@ -51,8 +52,13 @@ class ChatApp:
     def show_intro(self):
         if not self.has_history():
             with st.chat_message("assistant"):
-                st.write(f"""Hello 👋 I am a loan assistant running on {self.llm_info}. 
-                             I could help to provide customer info, bank risk policy or interest policy and perform loan recomendation analysis
+                if self.multi_agent:
+                    architecture="Multi Agents"
+                else:
+                    architecture="Simple Agent"
+                st.write(f"""Hello 👋 I am a loan assistant.
+                            I am running on **{self.llm_info}** with **{architecture}** architecture.
+                            I could help to provide customer info, bank risk policy or interest policy and perform loan recomendation analysis
                          """)
 
     def run(self):
