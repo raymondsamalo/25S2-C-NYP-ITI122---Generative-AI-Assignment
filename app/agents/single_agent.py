@@ -1,21 +1,20 @@
 
 
-from typing import Any, Generator, Iterator
-from app.agents.agent import Agent
-import time
-# in subfolder/my_script.py
-import sys
-import os
-import threading
 import logging
-from groq import APIError
-from langgraph.checkpoint.memory import InMemorySaver
-from langchain.messages import AIMessage
-from pydantic import ValidationError
-from langchain.agents import create_agent
-from app.langchain.tools import (
-    customer_lookup, interest_rate_policy_lookup, overall_risk_policy_lookup)
+# in subfolder/my_script.py
+import threading
+import time
+from typing import Any, Iterator
 
+from groq import APIError
+from langchain.agents import create_agent
+from langchain.messages import AIMessage
+from langgraph.checkpoint.memory import InMemorySaver
+from pydantic import ValidationError
+
+from app.agents.agent import Agent
+from app.langchain.tools import (customer_lookup, interest_rate_policy_lookup,
+                                 overall_risk_policy_lookup)
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

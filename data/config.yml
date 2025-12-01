@@ -1,8 +1,9 @@
 ---
 model:
   choice: ollama
-  # ollama_model: llama3.2:latest
-  ollama_model: gpt-oss:20b
+  #choice: groq
+  ollama_model: llama3.2:latest
+  #ollama_model: gpt-oss:20b
   groq_model: openai/gpt-oss-20b
   groq_api_key: !ENV ${GROQ_API_KEY}
 database:
