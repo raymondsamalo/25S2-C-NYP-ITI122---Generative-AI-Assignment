@@ -71,6 +71,7 @@ class OchestratorAgent(Agent):
     - Decide which agent tool to call
     - Combine results and give a final human-friendly answer
     - If the user is not asking for risk checks, answer conversationally
+    - If user ask for customer specific data like email or account status only provide the data that is asked
 
     When to call tools:
     - If user gives a customer_id or name or email → call agent_customer_data

@@ -6,7 +6,7 @@ import threading
 import time
 from typing import Any, Iterator
 
-from groq import APIError
+from groq import APIError, APIStatusError
 from langchain.agents import create_agent
 from langchain.messages import AIMessage
 from langchain_core.language_models.chat_models import BaseChatModel
@@ -37,6 +37,11 @@ class Agent:
                         if isinstance(message, AIMessage):
                             responses.append(message.content)
                     break
+                except APIStatusError as e:
+                    logger.error( "A general API Error occurred: %s on attempt %d/%d. Retrying...", str(e), retry+1, MAX_RETRIES)
+                    if e.status_code == 429:
+                        return "We run out of tokens for Groq, try again another day"
+                    time.sleep(0.2)  # wait before retrying
                 except APIError as e:
                     logger.error(
                         "A general API Error occurred: %s on attempt %d/%d. Retrying...", str(e), retry+1, MAX_RETRIES)

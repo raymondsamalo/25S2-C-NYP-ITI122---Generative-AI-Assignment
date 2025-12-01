@@ -48,5 +48,5 @@ class LoanAgent(Agent):
 
     def __init__(self, model: BaseChatModel):
         tools = [customer_lookup, interest_rate_policy_lookup,
-                 overall_risk_policy_lookup]
+                 overall_risk_policy_lookup, loan_assement]
         super().__init__(model, tools=tools, system_prompt=SYSTEM_PROMPT)

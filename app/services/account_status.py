@@ -53,7 +53,7 @@ class CustomerAccountStatusService:
         """
         return self._find_from_query(Customer.ID == customer_id)  # type: ignore
 
-    def find_by_name(self, name: str) -> Optional[int]:
+    def find_by_name(self, name: str) -> Optional[AccountStatus]:
         """_summary_
 
         Args:
