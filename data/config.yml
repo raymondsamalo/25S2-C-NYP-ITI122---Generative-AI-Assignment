@@ -1,0 +1,15 @@
+---
+multi_agent: False
+model:
+  choice: ollama
+  # choice: groq
+  #ollama_model: llama3.2:latest
+  ollama_model: gpt-oss:20b
+  groq_model: openai/gpt-oss-20b
+  #groq_model: llama-3.3-70b-versatile
+  groq_api_key: !ENV ${GROQ_API_KEY}
+database:
+  path: 'data/database.sqlite'
+policies:
+  interest_rate_doc: 'data/docs/Bank Loan Interest Rate Policy.pdf'
+  overall_risk_doc: 'data/docs/Bank Loan Overall Risk Policy.pdf'

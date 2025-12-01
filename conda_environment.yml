@@ -1,0 +1,23 @@
+name: lr
+channels:
+  - defaults
+dependencies:
+  - python=3.12
+  - pip
+  - pip:
+      - sqlmodel==0.0.27
+      - langchain==1.0.3
+      - langchain-classic==1.0.0
+      - langchain-community==0.4.1
+      - langchain-core==1.0.1
+      - langchain-groq==1.0.0
+      - langchain-ollama==1.0.0
+      - langchain-openai==1.0.1
+      - aiologic==0.15.0
+      - camelot-py==1.0.9
+      - pypdf==5.9.0
+      - streamlit==1.51.0
+      - pytest==9.0.1
+      - pytest-cov==7.0.0
+      - pyaml_env==1.2.2
+      - htbuilder==0.9.0
