@@ -1,11 +1,11 @@
 ---
-multi_agent: True # use multi-agent setup
+multi_agent: False # use multi-agent setup
 multi_model: False 
 # each agent uses its own model instance, this enables more parallelism but uses more resources 
 # this performed badly in testing with ollama local models
 # if False, agents share the same model instance
 model:
-  # choice: ollama
+  #choice: ollama
   choice: groq
   # ollama runs locally, groq is cloud-based
 

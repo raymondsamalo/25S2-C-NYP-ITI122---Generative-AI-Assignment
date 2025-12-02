@@ -6,12 +6,11 @@ import logging
 
 from app.agents.agent import Agent
 from app.langchain.llm import llm_chat
-from app.langchain.tools import (customer_lookup, 
+from app.langchain.tools import (customer_lookup, loan_assement,
                                  interest_rate_for_risk,
                                  overall_risk_policy_lookup,
                                  interest_rate_policy,
                                  overall_risk_policy)
-from langchain_core.language_models.chat_models import BaseChatModel
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -25,13 +24,18 @@ SYSTEM_PROMPT = """
      - interest_rate_policy_lookup: to lookup interest rate percentage based on the customer's overall risk level.
      - overall_risk_policy: to provide overall risk policy information of the bank.
      - interest_rate_policy: to provide interest rate policy information of the bank.
+     - loan_assement: to perform loan assesment based on customer information like name, residency, account status, credit score.
+     
+     When a user asks for customer information, use the customer_lookup tool.
+     When a user asks for overall risk level, use the overall_risk_policy_lookup tool.
+     When a user asks for interest rate percentage, use the interest_rate_policy_lookup tool.
+     When a user asks for bank risk policy, use the overall_risk_policy tool.
+     When a user asks for bank interest rate policy, use the interest_rate_policy tool.
+     when a user asks for loan assesment, use the loan_assement tool.
 
      When a user asks for a loan recommendation for a customer, you should:
      - use the customer_lookup tool to get customer information including credit score, residency status, account status.
-     - use the overall_risk_policy_lookup tool to get the overall risk level based on the customer's credit score and account status.
-     - use the interest_rate_policy_lookup tool to get the interest rate percentage based on the customer's overall risk level.
-     - provide a final recommendation on whether to approve the loan or not, and the interest rate percentage if approved.
-     - do not recommend loan to a non-resident but still show the interest rate and other information
+     - use loan_assement tool to perform loan assesment based on the customer information retrieved.
 
      Do not make up any customer information or bank policy information.
      Do not guess the overall risk level or interest rate percentage.
@@ -42,11 +46,10 @@ SYSTEM_PROMPT = """
     
      Always provide information obtained from the tools only.
      Always cite the source of your information from the tools.
-     Always explain your reasoning step by step.
      Always summarize your final recommendation clearly.
      Be concise, professional and polite in your response.
      Do not assume that user is asking for loan recommendation for a customer unless explicitly asked.
-          Provide all numerical results using exactly 3 decimal places.
+     Provide all numerical results using exactly 3 decimal places.
      """
 
 
@@ -56,6 +59,6 @@ class LoanAgent(Agent):
 
     def __init__(self, config):
         self.tools = [customer_lookup, interest_rate_for_risk,
-                 overall_risk_policy_lookup,interest_rate_policy, overall_risk_policy]
+                 overall_risk_policy_lookup,interest_rate_policy, overall_risk_policy, loan_assement]
         self.model = llm_chat(config)
         super().__init__(self.model, tools=self.tools, system_prompt=SYSTEM_PROMPT)

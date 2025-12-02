@@ -27,6 +27,10 @@ def loan_assement(name: str, residency: str, account_status: str, credit_score: 
     risk = policy_service.get_risk(credit_score=credit_score_value, account_status=account_status)
     interest_rate = policy_service.get_interest_rate(risk=risk)
     logger.info("loan_assement tool result risk %s interest %s", risk, interest_rate)
+    if residency == "non-resident":
+        recommendation =f" Loan is not recommended given {name} is a non-resident. If the customer managed to obtain residency, the interest rate recommended is {interest_rate} %"
+    else:
+        recommendation = "Loan is recommended for {name} with interest rate {interest_rate} %"
     report = f"""
         Name            : {name}
         Residency       : {residency}
@@ -34,11 +38,6 @@ def loan_assement(name: str, residency: str, account_status: str, credit_score: 
         Credit Score    : {credit_score}
         Risk            : {risk}
         Interest Rate   : {interest_rate} %
-        Recommendation   : 
+        Recommendation  : {recommendation}
     """
-    if residency == "non-resident":
-        report += f"\n Loan is not recommended given {name} is a non-resident."
-        report += f"\n If the customer managed to obtain residency, the interest rate recommended is {interest_rate} %"
-    else:
-        report += "\n Loan is recommended for {name} with interest rate {interest_rate} %"
     return report
