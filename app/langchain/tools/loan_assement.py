@@ -33,6 +33,8 @@ def loan_assement(name: str, residency: str, account_status: str, credit_score: 
         Account Status  : {account_status}
         Credit Score    : {credit_score}
         Risk            : {risk}
+        Interest Rate   : {interest_rate} %
+        Recommendation   : 
     """
     if residency == "non-resident":
         report += f"\n Loan is not recommended given {name} is a non-resident."
