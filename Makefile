@@ -1,6 +1,5 @@
 .ONESHELL:
-
-SHELL = /usr/bin/env bash
+SHELL = bash
 CONDA_ACTIVATE = source $$(conda info --base)/etc/profile.d/conda.sh ; conda activate ; conda activate
 
 help:

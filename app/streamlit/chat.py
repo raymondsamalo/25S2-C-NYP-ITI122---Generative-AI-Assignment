@@ -1,23 +1,26 @@
 import sys
 import os
 import streamlit as st
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 sys.path.append(os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.abspath(__file__)))))
 
 from app.dependencies import CONFIG
 from app.langchain.llm import llm_chat, llm_config_info
 from app.agents.single_agent import LoanAgent
-from app.agents.multi_agent import OchestratorAgent
+from app.agents.multi_agent import LoanMultiAgent
 
 class ChatApp:
     def __init__(self) -> None:
         self.llm_info = llm_config_info(CONFIG)
-        self.llm = llm_chat(CONFIG)
         self.multi_agent = CONFIG.multi_agent
         if self.multi_agent:
-            self.agent = OchestratorAgent(self.llm)
+            self.agent = LoanMultiAgent(config=CONFIG)
         else:    
-            self.agent = LoanAgent(self.llm)
+            self.agent = LoanAgent(config=CONFIG)
         
     def setup(self):
         st.set_option("client.toolbarMode", "minimal")
@@ -33,9 +36,13 @@ class ChatApp:
             horizontal=True,
             vertical_alignment="bottom",
         )
-
+        if self.multi_agent:
+            architecture="Multi Agents"
+        else:
+            architecture="Simple Agent"
         with title_row:
             st.title("🏦 Loan Risk Assistant", anchor=False, width="stretch")
+        st.subheader(f"💬  {architecture} Powered by {self.llm_info}")
 
     def show_history(self):
         for message in st.session_state.history:
@@ -56,12 +63,7 @@ class ChatApp:
     def show_intro(self):
         if not self.has_history():
             with st.chat_message("assistant"):
-                if self.multi_agent:
-                    architecture="Multi Agents"
-                else:
-                    architecture="Simple Agent"
-                st.write(f"""Hello 👋 I am a loan assistant.
-                            I am running on **{self.llm_info}** with **{architecture}** architecture.
+                st.write("""Hello 👋 I am a loan assistant.
                             I could help to provide customer info, bank risk policy or interest policy and perform loan recomendation analysis
                          """)
 
@@ -72,6 +74,7 @@ class ChatApp:
         self.show_history()
         self.main_loop()
 
+
     def main_loop(self):
         """ our main loop  """
         if prompt := st.chat_input("Say something", disabled=st.session_state.processing):
@@ -81,12 +84,15 @@ class ChatApp:
             st.rerun() # Rerun to disable the chat_input immediately
         if st.session_state.processing:
             # Simulate AI response generation
+            #with st.spinner("Generating response..."):
+            #    prompt = st.session_state.prompt
+            #    response = self.respond(prompt)
+            #with st.chat_message("assistant"):
+            #    st.markdown(response)
             with st.spinner("Generating response..."):
-                prompt = st.session_state.prompt
-                response = self.respond(prompt)
-            with st.chat_message("assistant"):
-                st.markdown(response)
-            self.add_history("assistant", response)
+                with st.chat_message("assistant"):
+                    response=st.write_stream(self.agent.stream(st.session_state.prompt))
+                    self.add_history("assistant", response)
             st.session_state.processing = False
             st.rerun() # Rerun to display assistant's message and re-enable chat_input
         

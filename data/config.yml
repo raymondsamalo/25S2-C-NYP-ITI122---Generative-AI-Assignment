@@ -1,12 +1,19 @@
 ---
-multi_agent: False
+multi_agent: True # use multi-agent setup
+multi_model: False 
+# each agent uses its own model instance, this enables more parallelism but uses more resources 
+# this performed badly in testing with ollama local models
+# if False, agents share the same model instance
 model:
-  #choice: ollama
+  # choice: ollama
   choice: groq
-  ollama_model: llama3.2:latest
-  #ollama_model: gpt-oss:20b
+  # ollama runs locally, groq is cloud-based
+
+  #ollama_model: llama3.2:latest
+  ollama_model: gpt-oss:20b
+  # we recommend using gpt-oss:20b for best performance but it requires a powerful machine
+  # llama3.2:latest is a good alternative for less powerful hardware
   groq_model: openai/gpt-oss-20b
-  #groq_model: llama-3.3-70b-versatile
   groq_api_key: !ENV ${GROQ_API_KEY}
 database:
   path: 'data/database.sqlite'

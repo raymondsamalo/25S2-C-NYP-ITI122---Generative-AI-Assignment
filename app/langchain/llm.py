@@ -24,8 +24,11 @@ def llm_chat(config: BaseConfig, temperature=0) -> BaseChatModel:
 
 def llm_config_info(config: BaseConfig):
     """ return llm config information"""
+    mode =""
     if config.model.choice == "groq":
         model=config.model.groq_model
+        mode="Cloud"
     else:
         model=config.model.ollama_model
-    return f"{config.model.choice} model {model}"
+        mode="Local"
+    return f"{config.model.choice} model {model} on {mode}"

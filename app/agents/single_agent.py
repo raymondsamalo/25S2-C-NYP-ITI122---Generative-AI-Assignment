@@ -5,19 +5,26 @@ import logging
 
 
 from app.agents.agent import Agent
-from app.langchain.tools import (customer_lookup, interest_rate_for_risk,
-                                 overall_risk_policy_lookup)
+from app.langchain.llm import llm_chat
+from app.langchain.tools import (customer_lookup, 
+                                 interest_rate_for_risk,
+                                 overall_risk_policy_lookup,
+                                 interest_rate_policy,
+                                 overall_risk_policy)
 from langchain_core.language_models.chat_models import BaseChatModel
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 SYSTEM_PROMPT = """
-     you are a helpful assistant for a loan officer in a bank. 
-     You are able to provide customer information and bank policy information.
-     You have access to the following tools:
+    you are a helpful assistant for a loan officer in a bank. 
+    You are able to provide customer information and bank policy information.
+
+    You have access to the following tools:
      - customer_lookup: to lookup customer information by identifier which can be customer ID, email, or name.
      - overall_risk_policy_lookup: to lookup overall risk level based on customer's credit score and account status.
      - interest_rate_policy_lookup: to lookup interest rate percentage based on the customer's overall risk level.
+     - overall_risk_policy: to provide overall risk policy information of the bank.
+     - interest_rate_policy: to provide interest rate policy information of the bank.
 
      When a user asks for a loan recommendation for a customer, you should:
      - use the customer_lookup tool to get customer information including credit score, residency status, account status.
@@ -47,7 +54,8 @@ class LoanAgent(Agent):
     """ An agent specialized for loan recommendations using customer lookup and policy lookup tools.
     """
 
-    def __init__(self, model: BaseChatModel):
-        tools = [customer_lookup, interest_rate_for_risk,
-                 overall_risk_policy_lookup]
-        super().__init__(model, tools=tools, system_prompt=SYSTEM_PROMPT)
+    def __init__(self, config):
+        self.tools = [customer_lookup, interest_rate_for_risk,
+                 overall_risk_policy_lookup,interest_rate_policy, overall_risk_policy]
+        self.model = llm_chat(config)
+        super().__init__(self.model, tools=self.tools, system_prompt=SYSTEM_PROMPT)
