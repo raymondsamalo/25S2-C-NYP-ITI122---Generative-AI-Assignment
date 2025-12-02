@@ -5,8 +5,8 @@ multi_model: False
 # this performed badly in testing with ollama local models
 # if False, agents share the same model instance
 model:
-  #choice: ollama
-  choice: groq
+  choice: ollama
+  #choice: groq
   # ollama runs locally, groq is cloud-based
 
   #ollama_model: llama3.2:latest
